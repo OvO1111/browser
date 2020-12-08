@@ -12,7 +12,6 @@ import re, math, os
 from decimal import getcontext
 # import comp_char from cnsort
 
-p = re.compile('<title>.*</title>', re.DOTALL)
 root = os.getcwd()
 copy = []
 new_list = []
@@ -21,7 +20,7 @@ text = []
 index = []
 
 try:
-    with open('keywords.txt', 'r') as fp:
+    with open('keywords.txt') as fp:
         ori = fp.readlines()
         for x in ori:
             x = re.sub(r'\n', '', x)
@@ -45,29 +44,23 @@ try:
             print(" ", copy[id])
             id += 1
         print("----------")
-        # dictionary = ["足球", "篮球", "羽毛球"]
 
     for roots, dirs, files in os.walk(root, topdown=False):
         for name in files:
-            if 'http' in name:
-                with open(os.path.join(roots, name), 'r') as fp:
-                    print(os.path.join(roots, name), "Begin indexing title: ")
+            if not name.endswith('jpg') or name.endswith('png') or name.endswith('gif'):
+                with open(os.path.join(roots, name)) as fp:
                     ori = fp.readlines()
 
                     for items in ori:
-                        if "<title>" in items:
-                            title = re.findall(p, items)[0].decode("string_escape")
-                            title = str(title).strip('<title>').strip('</title>')
-                            # items = re.sub(r'\n', '', items)
-                            text.append(title)
-                            index.append([])
+                        items = re.sub(r'\n', '', items)
+                        text.append(items)
+                        index.append([])
 
                 for str_input in text:
                     str_input = re.sub(r',，\.。_\?？；;/\'<>《》\(\)（）！!、——·', '', str_input)
 
-except (AttributeError, ValueError, ReferenceError, TypeError) as e:
-    print(f'ERROR: {e}\n')
-    exit(0)
+except ValueError:
+    print('ERROR')
 
 temp_text = -1
 for str_input in text:
@@ -89,11 +82,11 @@ for str_input in text:
             half = int((tail + head) / 2)
 
             while tail != half and head != half:
-                if operator.lt(dictionary[half][0], in_put):  # less than
+                if operator.lt(dictionary[half][0], in_put):
                     head = half
                     half = int((tail + head) / 2)
 
-                elif operator.gt(dictionary[half][0], in_put):  # greater than
+                elif operator.gt(dictionary[half][0], in_put):
                     tail = half
                     half = int((tail + head) / 2)
 
@@ -177,16 +170,19 @@ while flag == 1 and times < 100:
 
     for i in range(0, len(class_i)):
         sum = 0
+
         for j in range(0, len(class_i[i])):
             sum += class_i[i][j]
+
         if sum != 0:
             new_centroid = round(sum / len(class_i[i]), 3)
         else:
             continue
+
         if new_centroid != centroid[i]:
-            print("change centroid ", centroid[i], "as ", end="")
+            # print("change centroid ", centroid[i], "as ", end="")
             centroid[i] = new_centroid
-            print(centroid[i])
+            # print(centroid[i])
             flag = 1
 
 try:
@@ -198,5 +194,5 @@ try:
             f.write(str(i) + "\t" + text[element] + "\n")
     f.close()
     print(f"Print out {k} classes successfully.")
-except () as e:
+except:
     print("Print out to txt ERROR.")
